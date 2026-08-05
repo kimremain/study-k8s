@@ -1,0 +1,43 @@
+[project]
+name = "kubewatch-backend"
+version = "0.1.0"
+description = "KubeWatch API, scheduler, and worker"
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "fastapi>=0.116,<1",
+  "pydantic-settings>=2.10,<3",
+  "uvicorn[standard]>=0.35,<1",
+]
+
+[project.scripts]
+kubewatch-api = "kubewatch.api.__main__:main"
+kubewatch-scheduler = "kubewatch.scheduler.__main__:main"
+kubewatch-worker = "kubewatch.worker.__main__:main"
+
+[dependency-groups]
+dev = [
+  "asgi-lifespan>=2.1,<3",
+  "httpx>=0.28,<1",
+  "pytest>=8.4,<10",
+  "pytest-asyncio>=1.2,<2",
+  "ruff>=0.12,<1",
+]
+
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/kubewatch"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]

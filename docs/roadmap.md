@@ -2,12 +2,13 @@
 
 ## 0. Repository skeleton
 
-- npm workspaces와 서비스 경계 확정
+- FastAPI Backend와 React/Vite Frontend 경계 확정
+- uv와 npm lockfile로 도구·의존성 고정
 - Kustomize base/overlay 생성
 
 ## 1. First workload
 
-- 최소 API와 `/healthz`, `/readyz` 구현
+- FastAPI와 `/healthz`, `/readyz` 구현
 - 컨테이너 이미지 빌드
 - kind에 Deployment와 ClusterIP Service 배포
 - rollout, logs, exec, port-forward 실습
