@@ -45,7 +45,7 @@ $registeredImages = docker exec desktop-control-plane ctr -n k8s.io images list
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
-if ($registeredImages -notmatch [regex]::Escape($image)) {
+if ($registeredImages -notmatch ([regex]::Escape($image))) {
     Write-Error "Kubernetes 노드에서 이미지를 찾을 수 없습니다: $image"
     exit 1
 }
