@@ -56,6 +56,26 @@ npm install
 npm run dev
 ```
 
+## 로컬 이미지와 Kubernetes 배포
+
+롤백할 수 있도록 `local` 같은 재사용 태그 대신 `v1`, `v2`처럼 버전마다 다른
+이미지 태그를 사용합니다. 한 번 배포한 태그를 다른 내용으로 다시 빌드하지 않습니다.
+
+```powershell
+.\infra\scripts\build-local.ps1 -ImageTag v1
+.\infra\scripts\run-local.ps1 -ImageTag v1
+.\infra\scripts\deploy-local.ps1 -ImageTag v1
+```
+
+새 버전을 배포한 뒤 이전 이미지로 되돌릴 때도 revision을 명령형으로 복원하지
+않고, 검증된 이전 태그를 Kustomize로 다시 적용합니다.
+
+```powershell
+.\infra\scripts\build-local.ps1 -ImageTag v2
+.\infra\scripts\deploy-local.ps1 -ImageTag v2
+.\infra\scripts\rollback-local.ps1 -ImageTag v1
+```
+
 ## 전체 확인
 
 ```bash

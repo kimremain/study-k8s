@@ -1,3 +1,9 @@
+param(
+    [Parameter(Mandatory = $true)]
+    [ValidatePattern("^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$")]
+    [string]$ImageTag
+)
+
 # 스크립트 위치(infra/scripts)를 기준으로 프로젝트 루트를 계산한다.
 # 이후의 모든 상대 경로는 프로젝트 루트를 기준으로 해석된다.
 $projectRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..")
@@ -10,7 +16,7 @@ Set-Location $projectRoot
 docker run --rm `
     --name kubewatch-backend `
     -p 8005:8000 `
-    kubewatch-backend:local
+    "kubewatch-backend:$ImageTag"
 
 # 컨테이너 실행 중 사용할 수 있는 확인 주소:
 # Swagger:   http://localhost:8005/docs
