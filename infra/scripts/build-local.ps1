@@ -45,10 +45,11 @@ $registeredImages = docker exec desktop-control-plane ctr -n k8s.io images list
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
-if ($registeredImages -notmatch ([regex]::Escape($image))) {
+$imageRegistered = $registeredImages | Select-String -SimpleMatch $image -Quiet
+if (-not $imageRegistered) {
     Write-Error "Kubernetes 노드에서 이미지를 찾을 수 없습니다: $image"
     exit 1
 }
-$registeredImages | Select-String ([regex]::Escape($image))
+$registeredImages | Select-String -SimpleMatch $image
 
 Write-Host "빌드 및 등록 완료: $image"
