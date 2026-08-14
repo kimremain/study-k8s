@@ -1,0 +1,9 @@
+spec:
+  template:
+    spec:
+      containers:
+        - name: backend
+          readinessProbe:
+            httpGet:
+              path: /wrong-readyz
+              port: http
