@@ -42,3 +42,17 @@ async def test_openapi_exposes_health_routes() -> None:
 
     assert "/healthz" in schema["paths"]
     assert "/readyz" in schema["paths"]
+    assert "/api/v1/status" in schema["paths"]
+
+
+@pytest.mark.asyncio
+async def test_api_status_reports_service_information() -> None:
+  async with api_client() as client:
+    response = await client.get("/api/v1/status")
+
+  assert response.status_code == 200
+  assert response.json() == {
+    "status": "ok",
+    "service": "KubeWatch API",
+    "version": "0.1.0",
+  }

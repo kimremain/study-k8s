@@ -5,6 +5,7 @@ from fastapi import FastAPI
 
 from kubewatch import __version__
 from kubewatch.api.routes.health import router as health_router
+from kubewatch.api.routes.status import router as status_router
 from kubewatch.config import get_settings
 
 
@@ -23,6 +24,7 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
     app.include_router(health_router)
+    app.include_router(status_router)
     return app
 
 

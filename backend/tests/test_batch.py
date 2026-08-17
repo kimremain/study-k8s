@@ -5,6 +5,7 @@ import pytest
 
 from batch.main import build_summary, main, parse_run_date
 
+
 def test_parse_run_date():
   assert parse_run_date("2026-08-14") == date(2026, 8, 14)
 

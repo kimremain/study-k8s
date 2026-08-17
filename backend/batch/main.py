@@ -1,8 +1,8 @@
 import argparse
 import json
 import os
-from datetime import date, datetime, timezone
-from typing import Sequence
+from collections.abc import Sequence
+from datetime import UTC, date, datetime
 
 SAMPLE_RECORDS = [
   {"source": "orders", "count": 12},
@@ -25,7 +25,7 @@ def build_summary(run_date: date, records: Sequence[dict]) -> dict:
     "source_count": len(records),
     "total_count": sum(record["count"] for record in records),
     "sources": list(records),
-    "processed_at": datetime.now(timezone.utc).isoformat(),
+    "processed_at": datetime.now(UTC).isoformat(),
   }
 
 def main(argv: Sequence[str] | None = None) -> int:
