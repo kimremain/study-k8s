@@ -11,6 +11,12 @@ __pycache__/
 .env
 .env.*
 !.env.example
+!backend/config/**/*.env
+!frontend/config/.env
+!frontend/config/.env.loc
+!frontend/config/.env.dev
+!frontend/config/.env.stg
+!frontend/config/.env.prd
 *.log
 .DS_Store
 .idea/

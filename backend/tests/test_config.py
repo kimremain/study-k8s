@@ -1,4 +1,7 @@
-from kubewatch.config import Settings
+import pytest
+
+from kubewatch.config import Settings, get_environment_files, get_settings
+
 
 def test_settings_load_config_and_secret_from_environment(monkeypatch):
   monkeypatch.setenv("KUBEWATCH_APP_NAME", "KubeWatch Test")
@@ -19,3 +22,36 @@ def test_api_key_is_optional(monkeypatch):
 
   settings = Settings()
   assert settings.api_key is None
+
+
+def test_local_environment_loads_common_and_local_files(monkeypatch):
+  monkeypatch.setenv("KUBEWATCH_ENV", "loc")
+  monkeypatch.delenv("KUBEWATCH_APP_NAME", raising=False)
+  monkeypatch.delenv("KUBEWATCH_HOST", raising=False)
+  monkeypatch.delenv("KUBEWATCH_PORT", raising=False)
+  monkeypatch.delenv("KUBEWATCH_LOG_LEVEL", raising=False)
+  get_settings.cache_clear()
+
+  settings = get_settings()
+
+  assert settings.app_name == "KubeWatch API Local"
+  assert settings.host == "0.0.0.0"
+  assert settings.port == 8000
+  assert settings.log_level == "debug"
+  get_settings.cache_clear()
+
+
+def test_environment_variable_overrides_environment_file(monkeypatch):
+  monkeypatch.setenv("KUBEWATCH_ENV", "prd")
+  monkeypatch.setenv("KUBEWATCH_LOG_LEVEL", "critical")
+  get_settings.cache_clear()
+
+  settings = get_settings()
+
+  assert settings.log_level == "critical"
+  get_settings.cache_clear()
+
+
+def test_unknown_environment_is_rejected():
+  with pytest.raises(ValueError, match="Unsupported KUBEWATCH_ENV"):
+    get_environment_files("unknown")

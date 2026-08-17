@@ -22,21 +22,23 @@ describe("App", () => {
   });
 
   it("shows backend information when connected", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          status: "ok",
-          service: "KubeWatch API",
-          version: "0.1.0",
-        }),
-      } as Response),
-    );
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        status: "ok",
+        service: "KubeWatch API",
+        version: "0.1.0",
+      }),
+    } as Response);
+    vi.stubGlobal("fetch", fetchMock);
 
     render(<App />);
 
     expect(await screen.findByText("Connected")).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/v1/status",
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
     expect(screen.getByText("KubeWatch API")).toBeInTheDocument();
     expect(screen.getByText("0.1.0")).toBeInTheDocument();
   });

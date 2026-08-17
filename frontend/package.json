@@ -4,8 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev": "vite --mode loc",
+    "build": "npm run build:prd",
+    "build:loc": "tsc -b && vite build --mode loc",
+    "build:dev": "tsc -b && vite build --mode dev",
+    "build:stg": "tsc -b && vite build --mode stg",
+    "build:prd": "tsc -b && vite build --mode prd",
     "check": "tsc -b --pretty false",
     "test": "vitest run"
   },

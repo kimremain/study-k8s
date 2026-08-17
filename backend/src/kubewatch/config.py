@@ -1,7 +1,13 @@
+import os
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+CONFIG_ROOT = Path(__file__).resolve().parents[2] / "config"
+SUPPORTED_ENVIRONMENTS = frozenset({"loc", "dev", "stg", "prd"})
+
 
 class Settings(BaseSettings):
   app_name: str = "KubeWatch API"
@@ -19,6 +25,29 @@ class Settings(BaseSettings):
     case_sensitive=False,
     extra="ignore",
   )
+
+
+def get_environment_files(environment: str | None = None) -> tuple[Path, ...]:
+  selected_environment = environment or os.getenv("KUBEWATCH_ENV")
+  if not selected_environment:
+    return ()
+
+  if selected_environment not in SUPPORTED_ENVIRONMENTS:
+    supported = ", ".join(sorted(SUPPORTED_ENVIRONMENTS))
+    raise ValueError(
+      f"Unsupported KUBEWATCH_ENV: {selected_environment}. Expected one of: {supported}"
+    )
+
+  return (
+    CONFIG_ROOT / "base" / "common.env",
+    CONFIG_ROOT / "overlays" / selected_environment / f"{selected_environment}.env",
+  )
+
+
 @lru_cache
 def get_settings() -> Settings:
-  return Settings()
+  environment_files = get_environment_files()
+  if not environment_files:
+    return Settings()
+
+  return Settings(_env_file=environment_files)

@@ -18,7 +18,9 @@ function Build-AndImportImage {
     [string]$ImageName,
 
     [Parameter(Mandatory = $true)]
-    [string]$BuildContext
+    [string]$BuildContext,
+
+    [string[]]$BuildArguments = @()
   )
 
   # Create the full image name and a filesystem-safe archive name.
@@ -28,7 +30,7 @@ function Build-AndImportImage {
 
   # Build the image using the requested release tag.
   Write-Host "Building image: $image"
-  docker build -t $image $BuildContext
+  docker build @BuildArguments -t $image $BuildContext
   if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
   }
@@ -78,6 +80,7 @@ Build-AndImportImage `
 # Build and import the frontend image.
 Build-AndImportImage `
   -ImageName "kubewatch-frontend" `
-  -BuildContext (Join-Path $projectRoot "frontend")
+  -BuildContext (Join-Path $projectRoot "frontend") `
+  -BuildArguments @("--build-arg", "APP_ENV=loc")
 
 Write-Host "Build and import completed: $ImageTag"

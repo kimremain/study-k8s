@@ -6,7 +6,8 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-RUN npm run build
+ARG APP_ENV=prd
+RUN npm run "build:${APP_ENV}"
 
 FROM nginx:1.29-alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf

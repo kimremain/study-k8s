@@ -12,6 +12,9 @@ type ConnectionState =
   | { type: "error"; message: string };
 
 export function App() {
+  const appName = import.meta.env.VITE_APP_NAME ?? "KubeWatch";
+  const appEnvironment = import.meta.env.VITE_APP_ENV ?? import.meta.env.MODE;
+  const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? "/api").replace(/\/$/, "");
   const [connection, setConnection] = useState<ConnectionState>({
     type: "loading",
   });
@@ -21,7 +24,7 @@ export function App() {
 
     async function loadStatus() {
       try {
-        const response = await fetch("/api/v1/status", {
+        const response = await fetch(`${apiBaseUrl}/v1/status`, {
           signal: controller.signal,
         });
         if (!response.ok) {
@@ -45,12 +48,12 @@ export function App() {
     void loadStatus();
 
     return () => controller.abort();
-  }, []);
+  }, [apiBaseUrl]);
 
   return (
     <main>
-      <p className="eyebrow">Kubernetes study project</p>
-      <h1>KubeWatch</h1>
+      <p className="eyebrow">Kubernetes study project · {appEnvironment}</p>
+      <h1>{appName}</h1>
       <p>웹사이트 상태와 응답 시간을 관찰하는 대시보드를 준비하고 있습니다.</p>
       <section className="status-card" aria-live="polite">
         <h2>Backend connection</h2>
