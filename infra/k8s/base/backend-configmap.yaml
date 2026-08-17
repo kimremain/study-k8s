@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubewatch-backend-config
+  namespace: kubewatch
+  labels:
+    app.kubernetes.io/name: kubewatch-backend
+    app.kubernetes.io/part-of: kubewatch
+data:
+  KUBEWATCH_APP_NAME: "KubeWatch API via ConfigMap"
+  KUBEWATCH_LOG_LEVEL: "warning"

@@ -24,6 +24,22 @@ spec:
           ports:
             - name: http
               containerPort: 8000
+
+          # Import every key in the ConfigMap as an environment variable.
+          envFrom:
+            - configMapRef:
+                name: kubewatch-backend-config
+
+          # Import only the required key from the Secret.
+          env:
+            - name: KUBEWATCH_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: kubewatch-backend-secret
+                  key: KUBEWATCH_API_KEY
+                  # Keep the application runnable when no Secret exists.
+                  optional: true
+
           resources:
             requests:
               cpu: 50m
