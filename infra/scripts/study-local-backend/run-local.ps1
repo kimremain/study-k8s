@@ -6,7 +6,7 @@
 
 # 스크립트 위치(infra/scripts)를 기준으로 프로젝트 루트를 계산한다.
 # 이후의 모든 상대 경로는 프로젝트 루트를 기준으로 해석된다.
-$projectRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..")
+$projectRoot = Resolve-Path (Join-Path $PSScriptRoot "..\..\..")
 Set-Location $projectRoot
 
 # Kubernetes를 거치지 않고 백엔드 이미지를 Docker 컨테이너로 직접 실행한다.
