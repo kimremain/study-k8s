@@ -88,6 +88,22 @@ Alembic migration Job이 성공한 뒤 애플리케이션 rollout을 완료합�
 .\infra\scripts\rollback-local.ps1 -ImageTag v1
 ```
 
+## GKE dev Frontend 배포
+
+`dev` overlay는 GKE의 `kubewatch-dev` namespace에 Frontend Deployment와 내부
+`ClusterIP` Service만 배포합니다. Backend, Cloud SQL, 외부 Load Balancer는 이
+단계에 포함하지 않습니다.
+
+Artifact Registry에 push된 이미지는 변경 가능한 태그 대신 digest로 지정합니다.
+
+```bash
+IMAGE_REF="asia-northeast3-docker.pkg.dev/PROJECT_ID/REPOSITORY/kubewatch-frontend@sha256:DIGEST"
+./infra/scripts/deploy-dev-frontend.sh "$IMAGE_REF"
+```
+
+스크립트는 Kustomize 렌더링과 client-side dry run을 먼저 수행하고, 적용 후
+Deployment rollout과 실제 Pod template의 digest를 확인합니다.
+
 ## 전체 확인
 
 ```bash

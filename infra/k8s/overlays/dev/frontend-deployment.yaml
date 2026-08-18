@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubewatch-frontend
+  labels:
+    app: kubewatch-frontend
+    app.kubernetes.io/name: kubewatch-frontend
+    app.kubernetes.io/part-of: kubewatch
+    app.kubernetes.io/environment: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kubewatch-frontend
+  template:
+    metadata:
+      labels:
+        app: kubewatch-frontend
+        app.kubernetes.io/name: kubewatch-frontend
+        app.kubernetes.io/part-of: kubewatch
+        app.kubernetes.io/environment: dev
+    spec:
+      containers:
+        - name: frontend
+          image: kubewatch-frontend:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10

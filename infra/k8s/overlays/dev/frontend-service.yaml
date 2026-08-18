@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubewatch-frontend
+  labels:
+    app.kubernetes.io/name: kubewatch-frontend
+    app.kubernetes.io/part-of: kubewatch
+    app.kubernetes.io/environment: dev
+spec:
+  type: ClusterIP
+  selector:
+    app: kubewatch-frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
