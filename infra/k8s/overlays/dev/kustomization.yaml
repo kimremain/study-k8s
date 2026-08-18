@@ -7,3 +7,8 @@ resources:
   - namespace.yaml
   - frontend-deployment.yaml
   - frontend-service.yaml
+
+images:
+  - name: kubewatch-frontend
+    newName: asia-northeast3-docker.pkg.dev/study-gcp-cicd/study-cicd-images/kubewatch-frontend
+    digest: sha256:1d62977b08534c72e0fe8549180391910acfe553e968a94a1f1451c709c05580

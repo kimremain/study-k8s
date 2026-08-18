@@ -95,10 +95,11 @@ Alembic migration Job이 성공한 뒤 애플리케이션 rollout을 완료합�
 단계에 포함하지 않습니다.
 
 Artifact Registry에 push된 이미지는 변경 가능한 태그 대신 digest로 지정합니다.
+배포할 digest는 `infra/k8s/overlays/dev/kustomization.yaml`에 선언되어 있으므로
+배포할 때 별도의 이미지 인자를 전달하지 않습니다.
 
 ```bash
-IMAGE_REF="asia-northeast3-docker.pkg.dev/PROJECT_ID/REPOSITORY/kubewatch-frontend@sha256:DIGEST"
-./infra/scripts/deploy-dev-frontend.sh "$IMAGE_REF"
+./infra/scripts/deploy-dev-frontend.sh
 ```
 
 스크립트는 Kustomize 렌더링과 client-side dry run을 먼저 수행하고, 적용 후
