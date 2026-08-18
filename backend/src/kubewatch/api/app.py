@@ -5,15 +5,16 @@ from fastapi import FastAPI
 
 from kubewatch import __version__
 from kubewatch.api.routes.health import router as health_router
+from kubewatch.api.routes.snapshots import router as snapshots_router
 from kubewatch.api.routes.status import router as status_router
 from kubewatch.config import get_settings
+from kubewatch.db.session import close_database
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    app.state.ready = True
     yield
-    app.state.ready = False
+    await close_database()
 
 
 def create_app() -> FastAPI:
@@ -24,6 +25,7 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
     app.include_router(health_router)
+    app.include_router(snapshots_router)
     app.include_router(status_router)
     return app
 

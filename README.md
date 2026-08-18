@@ -11,7 +11,8 @@ Kubernetes를 단계적으로 학습하기 위한 웹사이트 상태 모니터�
 - Frontend: React, Vite, TypeScript
 - Test/Lint: pytest, Ruff, TypeScript compiler
 - Infrastructure: Kubernetes, Kustomize
-- Later milestones: PostgreSQL, Redis, SQLAlchemy, Alembic, Dramatiq
+- Persistence: PostgreSQL, PVC, SQLAlchemy, Alembic
+- Later milestones: Redis, Dramatiq
 
 ## 저장소 구조
 
@@ -47,6 +48,7 @@ uv run kubewatch-api
 - OpenAPI UI: <http://127.0.0.1:8000/docs>
 - Liveness: <http://127.0.0.1:8000/healthz>
 - Readiness: <http://127.0.0.1:8000/readyz>
+- Resource snapshots: <http://127.0.0.1:8000/api/v1/resource-snapshots>
 
 ## Frontend 실행
 
@@ -60,6 +62,16 @@ npm run dev
 
 롤백할 수 있도록 `local` 같은 재사용 태그 대신 `v1`, `v2`처럼 버전마다 다른
 이미지 태그를 사용합니다. 한 번 배포한 태그를 다른 내용으로 다시 빌드하지 않습니다.
+
+첫 배포 전 PostgreSQL 비밀번호를 Kubernetes Secret으로 입력합니다. 비밀번호는
+Git이나 PowerShell 명령 기록에 저장되지 않습니다.
+
+```powershell
+.\infra\scripts\set-local-database-secret.ps1
+```
+
+로컬 overlay는 PostgreSQL StatefulSet과 1Gi PVC를 만들고, 배포 스크립트는
+Alembic migration Job이 성공한 뒤 애플리케이션 rollout을 완료합니다.
 
 ```powershell
 .\infra\scripts\build-local.ps1 -ImageTag v1

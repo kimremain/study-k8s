@@ -15,6 +15,14 @@ class Settings(BaseSettings):
   port: int = 8000
   log_level: str = "info"
 
+  database_host: str = "127.0.0.1"
+  database_port: int = 5432
+  database_name: str = "kubewatch"
+  database_user: str = "kubewatch"
+  database_password: SecretStr | None = None
+  database_pool_size: int = 5
+  database_connect_timeout_seconds: float = 3.0
+
   # SecretStr prevents accidental plaintext exposure in logs and repr output.
   # The value is optional so the application can run without a Secret.
   api_key: SecretStr | None = None

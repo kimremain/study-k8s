@@ -7,15 +7,19 @@ def test_settings_load_config_and_secret_from_environment(monkeypatch):
   monkeypatch.setenv("KUBEWATCH_APP_NAME", "KubeWatch Test")
   monkeypatch.setenv("KUBEWATCH_LOG_LEVEL", "warning")
   monkeypatch.setenv("KUBEWATCH_API_KEY", "local-test-key")
+  monkeypatch.setenv("KUBEWATCH_DATABASE_PASSWORD", "database-test-password")
   settings = Settings()
 
   assert settings.app_name == "KubeWatch Test"
   assert settings.log_level == "warning"
   assert settings.api_key is not None
   assert settings.api_key.get_secret_value() == "local-test-key"
+  assert settings.database_password is not None
+  assert settings.database_password.get_secret_value() == "database-test-password"
 
   # SecretStr must not expose the plaintext value through repr().
   assert "local-test-key" not in repr(settings)
+  assert "database-test-password" not in repr(settings)
 
 def test_api_key_is_optional(monkeypatch):
   monkeypatch.delenv("KUBEWATCH_API_KEY", raising=False)

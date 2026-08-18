@@ -21,8 +21,9 @@
 
 ## 3. Persistence
 
-- PostgreSQL과 PVC 도입
-- migration Job과 장애 복구 실습
+- PostgreSQL StatefulSet과 PVC 도입
+- SQLAlchemy 상태 이력과 Alembic migration Job 도입
+- DB 연결 기반 readiness probe 구성
 - API 무중단 롤링 업데이트
 
 ## 4. Asynchronous checks

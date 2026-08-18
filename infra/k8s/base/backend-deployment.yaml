@@ -39,6 +39,11 @@ spec:
                   key: KUBEWATCH_API_KEY
                   # Keep the application runnable when no Secret exists.
                   optional: true
+            - name: KUBEWATCH_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kubewatch-database-secret
+                  key: KUBEWATCH_DATABASE_PASSWORD
 
           resources:
             requests:

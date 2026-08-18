@@ -6,6 +6,9 @@ namespace: kubewatch
 resources:
   - ../../base
   - ../../../../backend/config/overlays/loc
+  - backend-migration-job.yaml
   - ingress.yaml
+  - postgres-service.yaml
+  - postgres-statefulset.yaml
 
 nameSuffix: -local

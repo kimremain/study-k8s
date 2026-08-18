@@ -29,5 +29,8 @@ OpenAPI로 생성한 TypeScript 계약만 사용합니다.
 
 - 각 앱은 별도 이미지와 Deployment 또는 CronJob으로 배포합니다.
 - 설정은 ConfigMap, 민감정보는 Secret으로 주입합니다.
+- PostgreSQL은 로컬 학습 overlay에서만 StatefulSet/PVC로 실행하며, 상위 환경의
+  DB 운영 방식은 환경별로 별도 결정합니다.
+- 스키마 변경은 애플리케이션 rollout 전에 Alembic Job으로 적용합니다.
 - 모든 장기 실행 앱에 startup/readiness/liveness probe를 둡니다.
 - 로컬 환경은 Kustomize overlay로 시작하고 Helm은 구조가 안정된 뒤 도입합니다.

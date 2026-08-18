@@ -6,11 +6,13 @@ from asgi_lifespan import LifespanManager
 from httpx import ASGITransport, AsyncClient
 
 from kubewatch.api.app import create_app
+from kubewatch.db.session import database_is_ready
 
 
 @asynccontextmanager
 async def api_client() -> AsyncIterator[AsyncClient]:
     app = create_app()
+    app.dependency_overrides[database_is_ready] = lambda: True
     async with LifespanManager(app):
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
@@ -36,6 +38,19 @@ async def test_readyz_reports_ready_during_lifespan() -> None:
 
 
 @pytest.mark.asyncio
+async def test_readyz_fails_when_database_is_unavailable() -> None:
+    app = create_app()
+    app.dependency_overrides[database_is_ready] = lambda: False
+    async with LifespanManager(app):
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            response = await client.get("/readyz")
+
+    assert response.status_code == 503
+    assert response.json() == {"status": "not_ready"}
+
+
+@pytest.mark.asyncio
 async def test_openapi_exposes_health_routes() -> None:
     async with api_client() as client:
         schema = (await client.get("/openapi.json")).json()
@@ -43,6 +58,7 @@ async def test_openapi_exposes_health_routes() -> None:
     assert "/healthz" in schema["paths"]
     assert "/readyz" in schema["paths"]
     assert "/api/v1/status" in schema["paths"]
+    assert "/api/v1/resource-snapshots" in schema["paths"]
 
 
 @pytest.mark.asyncio

@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kubewatch-postgres
+  labels:
+    app.kubernetes.io/name: kubewatch-postgres
+    app.kubernetes.io/part-of: kubewatch
+spec:
+  serviceName: kubewatch-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kubewatch-postgres
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kubewatch-postgres
+        app.kubernetes.io/part-of: kubewatch
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:17.6-bookworm
+          ports:
+            - name: postgres
+              containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: kubewatch-backend-config
+                  key: KUBEWATCH_DATABASE_NAME
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: kubewatch-backend-config
+                  key: KUBEWATCH_DATABASE_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kubewatch-database-secret
+                  key: KUBEWATCH_DATABASE_PASSWORD
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          app.kubernetes.io/name: kubewatch-postgres
+          app.kubernetes.io/part-of: kubewatch
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi

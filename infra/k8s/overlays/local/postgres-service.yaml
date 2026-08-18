@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubewatch-postgres
+  labels:
+    app.kubernetes.io/name: kubewatch-postgres
+    app.kubernetes.io/part-of: kubewatch
+spec:
+  selector:
+    app.kubernetes.io/name: kubewatch-postgres
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres
