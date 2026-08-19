@@ -118,6 +118,23 @@ GCP 프로젝트가 `study-gcp-cicd`가 아니면 실행을 중단합니다.
 빌드가 성공하면 이후 Kustomize 배포에 사용할 수 있는 변경 불가능한 image digest를
 출력합니다. 태그는 소스 추적용이며 실제 배포 설정에는 출력된 digest를 사용합니다.
 
+## GKE dev Backend 배포
+
+Backend는 전용 Kubernetes ServiceAccount와 Google Service Account를 Workload
+Identity로 연결하고, Cloud SQL Auth Proxy sidecar를 통해 PostgreSQL에 접속합니다.
+Google Service Account에는 `roles/cloudsql.client`만 부여합니다.
+
+Cloud SQL의 `kubewatch` 데이터베이스와 사용자, 그리고
+`kubewatch-dev/kubewatch-database-secret`을 먼저 만든 뒤 identity를 초기화합니다.
+
+```bash
+./infra/scripts/bootstrap-dev-backend-identity.sh
+./infra/scripts/deploy-dev-backend.sh
+```
+
+배포 스크립트는 Secret과 immutable Backend image를 확인하고, Alembic migration
+Job이 완료된 뒤 Backend rollout과 실제 Deployment image digest를 검증합니다.
+
 ## 전체 확인
 
 ```bash

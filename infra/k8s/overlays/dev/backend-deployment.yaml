@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubewatch-backend
+  labels:
+    app.kubernetes.io/name: kubewatch-backend
+    app.kubernetes.io/part-of: kubewatch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kubewatch-backend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kubewatch-backend
+        app.kubernetes.io/part-of: kubewatch
+    spec:
+      serviceAccountName: kubewatch-backend
+      containers:
+        - name: backend
+          image: kubewatch-backend:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: kubewatch-backend-config
+          env:
+            - name: KUBEWATCH_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: kubewatch-backend-secret
+                  key: KUBEWATCH_API_KEY
+                  optional: true
+            - name: KUBEWATCH_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kubewatch-database-secret
+                  key: KUBEWATCH_DATABASE_PASSWORD
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 5
+        - name: cloud-sql-proxy
+          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy@sha256:0b7fc3a63ac4b48163b8b2181e3ca47abade9d671d10908ba0ad3ba2935e392d
+          args:
+            - --structured-logs
+            - --port=5432
+            - study-gcp-cicd:asia-northeast3:kubewatch-dev
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
