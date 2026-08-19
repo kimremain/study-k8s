@@ -72,7 +72,28 @@ for _ in $(seq 1 120); do
     jq -r '[.status.parents[]?.conditions[]? | select(.type == "ResolvedRefs" and .status == "True")] | length' \
       <<<"$route_status"
   )"
-  if (( accepted > 0 && resolved_refs > 0 )); then
+  exact_backend_matches="$(
+    jq -r '[
+      .spec.rules[]?
+      | select(any(.backendRefs[]?; .name == "kubewatch-backend"))
+      | .matches[]?.path
+      | select(.type == "Exact" and .value == "/api/v1/status")
+    ] | length' <<<"$route_status"
+  )"
+  broad_backend_matches="$(
+    jq -r '[
+      .spec.rules[]?
+      | select(any(.backendRefs[]?; .name == "kubewatch-backend"))
+      | .matches[]?.path
+      | select(.type != "Exact" or .value != "/api/v1/status")
+    ] | length' <<<"$route_status"
+  )"
+  if ((
+    accepted > 0 &&
+      resolved_refs > 0 &&
+      exact_backend_matches == 1 &&
+      broad_backend_matches == 0
+  )); then
     route_ready=1
     break
   fi
@@ -80,7 +101,7 @@ for _ in $(seq 1 120); do
 done
 
 if [[ "$route_ready" != "1" ]]; then
-  echo "HTTPRoute was not accepted with resolved backend references" >&2
+  echo "HTTPRoute was not accepted or Backend exposure was broader than /api/v1/status" >&2
   kubectl describe "httproute/$route" --namespace="$namespace" >&2
   exit 1
 fi

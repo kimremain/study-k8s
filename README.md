@@ -138,7 +138,8 @@ Job이 완료된 뒤 Backend rollout과 실제 Deployment image digest를 검증
 ## GKE dev Gateway 배포
 
 Frontend와 Backend가 모두 준비된 뒤 GKE Gateway API를 활성화하고, 하나의 외부
-주소에서 `/api`는 Backend로, 나머지 경로는 Frontend로 전달할 수 있습니다.
+주소에서 `/api/v1/status`만 Backend로, 나머지 경로는 Frontend로 전달할 수
+있습니다. 데이터 조회·쓰기 API는 외부 Gateway를 통해 Backend에 도달하지 않습니다.
 Gateway API 활성화 자체에는 별도 요금이 없지만 Gateway를 적용하면 public
 Application Load Balancer와 관련 Compute Engine 리소스에 요금이 발생합니다.
 

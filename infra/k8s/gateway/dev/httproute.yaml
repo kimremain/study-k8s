@@ -12,8 +12,8 @@ spec:
   rules:
     - matches:
         - path:
-            type: PathPrefix
-            value: /api
+            type: Exact
+            value: /api/v1/status
       backendRefs:
         - name: kubewatch-backend
           port: 8000
