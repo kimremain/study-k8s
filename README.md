@@ -135,6 +135,29 @@ Cloud SQL의 `kubewatch` 데이터베이스와 사용자, 그리고
 배포 스크립트는 Secret과 immutable Backend image를 확인하고, Alembic migration
 Job이 완료된 뒤 Backend rollout과 실제 Deployment image digest를 검증합니다.
 
+## GKE dev Gateway 배포
+
+Frontend와 Backend가 모두 준비된 뒤 GKE Gateway API를 활성화하고, 하나의 외부
+주소에서 `/api`는 Backend로, 나머지 경로는 Frontend로 전달할 수 있습니다.
+Gateway API 활성화 자체에는 별도 요금이 없지만 Gateway를 적용하면 public
+Application Load Balancer와 관련 Compute Engine 리소스에 요금이 발생합니다.
+
+```bash
+./infra/scripts/bootstrap-dev-gateway.sh
+./infra/scripts/deploy-dev-gateway.sh --confirm-public-load-balancer
+```
+
+dev Gateway는 `gke-l7-global-external-managed` GatewayClass를 사용합니다. HTTP만
+열며 도메인과 TLS 인증서는 아직 구성하지 않습니다. 배포 스크립트는 Gateway와
+HTTPRoute가 준비될 때까지 기다린 뒤 외부 주소의 Frontend와 `/api/v1/status`를
+모두 검증합니다.
+
+학습을 마치고 외부 Load Balancer를 제거할 때는 다음 명령을 실행합니다.
+
+```bash
+./infra/scripts/delete-dev-gateway.sh --confirm-delete-public-load-balancer
+```
+
 ## 전체 확인
 
 ```bash

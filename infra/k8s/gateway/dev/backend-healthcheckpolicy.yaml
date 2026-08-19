@@ -1,0 +1,23 @@
+apiVersion: networking.gke.io/v1
+kind: HealthCheckPolicy
+metadata:
+  name: kubewatch-backend
+  labels:
+    app.kubernetes.io/part-of: kubewatch
+    app.kubernetes.io/environment: dev
+spec:
+  default:
+    checkIntervalSec: 15
+    timeoutSec: 5
+    healthyThreshold: 2
+    unhealthyThreshold: 2
+    config:
+      type: HTTP
+      httpHealthCheck:
+        portSpecification: USE_FIXED_PORT
+        port: 8000
+        requestPath: /healthz
+  targetRef:
+    group: ""
+    kind: Service
+    name: kubewatch-backend

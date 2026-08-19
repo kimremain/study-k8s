@@ -1,0 +1,22 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kubewatch
+  labels:
+    app.kubernetes.io/part-of: kubewatch
+    app.kubernetes.io/environment: dev
+spec:
+  parentRefs:
+    - name: kubewatch-external
+      sectionName: http
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api
+      backendRefs:
+        - name: kubewatch-backend
+          port: 8000
+    - backendRefs:
+        - name: kubewatch-frontend
+          port: 80

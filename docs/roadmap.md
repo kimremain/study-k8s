@@ -18,6 +18,7 @@
 - ConfigMap과 Secret 주입
 - resource request/limit 및 probe 구성
 - Ingress Controller와 로컬 호스트명 연결
+- GKE Gateway와 HTTPRoute로 Frontend 및 `/api` 외부 라우팅
 
 ## 3. Persistence
 
