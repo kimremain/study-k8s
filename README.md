@@ -105,6 +105,19 @@ Artifact Registry에 push된 이미지는 변경 가능한 태그 대신 digest�
 스크립트는 Kustomize 렌더링과 client-side dry run을 먼저 수행하고, 적용 후
 Deployment rollout과 실제 Pod template의 digest를 확인합니다.
 
+## GKE dev Backend 이미지 빌드
+
+Backend 이미지는 Cloud Build에서 빌드해 서울 리전 Artifact Registry에 push합니다.
+빌드 스크립트는 현재 Git 커밋으로 태그를 만들며, 로컬 변경이 남아 있거나 현재
+GCP 프로젝트가 `study-gcp-cicd`가 아니면 실행을 중단합니다.
+
+```bash
+./infra/scripts/build-dev-backend.sh
+```
+
+빌드가 성공하면 이후 Kustomize 배포에 사용할 수 있는 변경 불가능한 image digest를
+출력합니다. 태그는 소스 추적용이며 실제 배포 설정에는 출력된 digest를 사용합니다.
+
 ## 전체 확인
 
 ```bash
