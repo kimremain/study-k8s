@@ -125,6 +125,7 @@ fi
 echo "Waiting for public routes to become healthy: $public_origin"
 frontend_ok=0
 backend_ok=0
+restricted_api_ok=0
 for _ in $(seq 1 120); do
   if curl --fail --silent --max-time 10 "$public_origin/" \
     | grep -q '<div id="root">'; then
@@ -134,14 +135,26 @@ for _ in $(seq 1 120); do
     | grep -q '"status":"ok"'; then
     backend_ok=1
   fi
-  if [[ "$frontend_ok" == "1" && "$backend_ok" == "1" ]]; then
+  if curl --fail --silent --max-time 10 "$public_origin/api/v1/resource-snapshots" \
+    | grep -q '<div id="root">'; then
+    restricted_api_ok=1
+  fi
+  if [[
+    "$frontend_ok" == "1" &&
+      "$backend_ok" == "1" &&
+      "$restricted_api_ok" == "1"
+  ]]; then
     break
   fi
   sleep 5
 done
 
-if [[ "$frontend_ok" != "1" || "$backend_ok" != "1" ]]; then
-  echo "Public route verification failed: frontend=$frontend_ok backend=$backend_ok" >&2
+if [[
+  "$frontend_ok" != "1" ||
+    "$backend_ok" != "1" ||
+    "$restricted_api_ok" != "1"
+]]; then
+  echo "Public route verification failed: frontend=$frontend_ok backend=$backend_ok restricted_api=$restricted_api_ok" >&2
   kubectl describe "gateway/$gateway" "httproute/$route" --namespace="$namespace" >&2
   exit 1
 fi
