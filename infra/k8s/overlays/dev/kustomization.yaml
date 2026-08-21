@@ -19,7 +19,7 @@ resources:
 images:
   - name: kubewatch-backend
     newName: asia-northeast3-docker.pkg.dev/study-gcp-cicd/study-cicd-images/kubewatch-backend
-    digest: sha256:c287c2219fe268fee7cd0fe4d9459f7da6d17d2996b7e3e30daec98ff5083ba8
+    digest: sha256:8118ba5a3d83ec7c71176ffdd4633a6b67e2e38ac5bfb21456b8690cc408278e
   - name: kubewatch-frontend
     newName: asia-northeast3-docker.pkg.dev/study-gcp-cicd/study-cicd-images/kubewatch-frontend
     digest: sha256:1d62977b08534c72e0fe8549180391910acfe553e968a94a1f1451c709c05580
