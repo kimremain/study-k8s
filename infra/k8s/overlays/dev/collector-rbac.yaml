@@ -1,0 +1,36 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: kubewatch-resource-reader
+  labels:
+    app.kubernetes.io/name: kubewatch-resource-collector
+    app.kubernetes.io/part-of: kubewatch
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - list
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+    verbs:
+      - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: kubewatch-resource-reader
+  labels:
+    app.kubernetes.io/name: kubewatch-resource-collector
+    app.kubernetes.io/part-of: kubewatch
+subjects:
+  - kind: ServiceAccount
+    name: kubewatch-collector
+    namespace: kubewatch-dev
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: kubewatch-resource-reader

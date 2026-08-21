@@ -23,6 +23,9 @@ class Settings(BaseSettings):
   database_pool_size: int = 5
   database_connect_timeout_seconds: float = 3.0
 
+  collector_namespace: str = "default"
+  kubernetes_api_timeout_seconds: float = 10.0
+
   # SecretStr prevents accidental plaintext exposure in logs and repr output.
   # The value is optional so the application can run without a Secret.
   api_key: SecretStr | None = None

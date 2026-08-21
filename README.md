@@ -135,6 +135,27 @@ Cloud SQL의 `kubewatch` 데이터베이스와 사용자, 그리고
 배포 스크립트는 Secret과 immutable Backend image를 확인하고, Alembic migration
 Job이 완료된 뒤 Backend rollout과 실제 Deployment image digest를 검증합니다.
 
+## GKE dev Resource Collector
+
+dev overlay에는 5분마다 같은 namespace의 Pod와 Deployment 상태를 수집하는
+`kubewatch-resource-collector` CronJob이 포함됩니다. Collector는 Backend와 별도의
+Kubernetes ServiceAccount를 사용하며, namespace 범위 Role을 통해 두 리소스의
+`list` 권한만 가집니다. Secret을 조회할 권한은 없습니다.
+
+Collector는 Kubernetes API에서 필요한 상태 필드만 추출하고 Cloud SQL Auth Proxy를
+거쳐 `resource_snapshots` 테이블에 한 트랜잭션으로 저장합니다. 원본 리소스 spec이나
+Secret 데이터는 저장하지 않습니다. `concurrencyPolicy: Forbid`로 예약 실행이
+겹치지 않으며 완료된 Job은 10분 뒤 자동 정리됩니다.
+
+Backend 배포 스크립트가 RBAC의 허용·거부 경계와 CronJob image digest를 확인한 뒤,
+CronJob 템플릿으로 즉시 검증 Job을 한 번 실행합니다.
+
+```bash
+./infra/scripts/bootstrap-dev-backend-identity.sh
+./infra/scripts/deploy-dev-backend.sh
+kubectl get cronjob,job -n kubewatch-dev
+```
+
 ## GKE dev Gateway 배포
 
 Frontend와 Backend가 모두 준비된 뒤 GKE Gateway API를 활성화하고, 하나의 외부

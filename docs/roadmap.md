@@ -26,10 +26,11 @@
 - SQLAlchemy 상태 이력과 Alembic migration Job 도입
 - DB 연결 기반 readiness probe 구성
 - API 무중단 롤링 업데이트
+- 전용 ServiceAccount/RBAC를 쓰는 CronJob으로 Pod·Deployment 상태 이력 수집
 
 ## 4. Asynchronous checks
 
-- Redis, Scheduler CronJob, Worker 도입
+- 사용자 URL 점검을 위한 Redis, Scheduler CronJob, Worker 도입
 - 재시도와 멱등성 구현
 - 큐 적체를 만들어 수평 확장 관찰
 

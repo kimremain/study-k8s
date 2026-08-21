@@ -11,7 +11,7 @@ project_id="study-gcp-cicd"
 region="asia-northeast3"
 cluster="kubewatch-dev"
 namespace="kubewatch-dev"
-kubernetes_service_account="kubewatch-backend"
+kubernetes_service_accounts=("kubewatch-backend" "kubewatch-collector")
 google_service_account="kubewatch-backend-dev"
 google_service_account_email="${google_service_account}@${project_id}.iam.gserviceaccount.com"
 workload_pool="${project_id}.svc.id.goog"
@@ -60,10 +60,12 @@ gcloud projects add-iam-policy-binding "$project_id" \
   --role="roles/cloudsql.client" \
   --condition=None >/dev/null
 
-echo "Allowing the Kubernetes service account to use the Google identity"
-gcloud iam service-accounts add-iam-policy-binding "$google_service_account_email" \
-  --project="$project_id" \
-  --member="serviceAccount:${workload_pool}[${namespace}/${kubernetes_service_account}]" \
-  --role="roles/iam.workloadIdentityUser" >/dev/null
+for kubernetes_service_account in "${kubernetes_service_accounts[@]}"; do
+  echo "Allowing $kubernetes_service_account to use the Google identity"
+  gcloud iam service-accounts add-iam-policy-binding "$google_service_account_email" \
+    --project="$project_id" \
+    --member="serviceAccount:${workload_pool}[${namespace}/${kubernetes_service_account}]" \
+    --role="roles/iam.workloadIdentityUser" >/dev/null
+done
 
 echo "Backend Workload Identity bootstrap completed: $google_service_account_email"

@@ -7,6 +7,9 @@ resources:
   - namespace.yaml
   - ../../../../backend/config/overlays/dev
   - backend-serviceaccount.yaml
+  - collector-serviceaccount.yaml
+  - collector-rbac.yaml
+  - resource-collector-cronjob.yaml
   - backend-deployment.yaml
   - backend-service.yaml
   - backend-migration-job.yaml
